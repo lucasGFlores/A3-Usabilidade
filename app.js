@@ -523,12 +523,101 @@ function addSubject() {
   showToast(`"${name}" adicionada!`);
 }
 /* ══════════════════════════════
-   CALENDAR
+   CALENDAR MODAL
 ══════════════════════════════ */
-function calendar() {
-  const s = subjects[idx]
-  const UCs_truancys_date = getTruancy(s)
-  showToast("Datas de falta: " + UCs_truancys_date)
+
+function openCalendarModal() {
+  const s = subjects[idx];
+  const dates = getTruancy(s); // array of 'DD/MM/YYYY' strings
+
+  // ── Header ──────────────────────────────────────────────
+  document.getElementById('calendarTitle').textContent = s.name;
+  document.getElementById('calendarSubtitle').textContent = s.day;
+
+  // ── Build calendar for current month ────────────────────
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-based
+  const today = now.getDate();
+
+  // Set of absent dates as 'D/M/YYYY' for fast lookup
+  const absentSet = new Set(
+    dates.map(d => {
+      // stored as 'DD/MM/YYYY' from toLocaleDateString('pt-BR')
+      const [dd, mm, yyyy] = d.split('/');
+      return `${parseInt(dd)}/${parseInt(mm)}/${yyyy}`;
+    })
+  );
+
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  document.getElementById('calendarMonthLabel').textContent =
+    `${monthNames[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Reorder: week starts on Monday (0=Mon … 6=Sun)
+  const startOffset = (firstDay + 6) % 7;
+
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+
+  // Day-of-week headers
+  ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].forEach(d => {
+    const th = document.createElement('div');
+    th.className = 'cal-header';
+    th.textContent = d;
+    grid.appendChild(th);
+  });
+
+  // Empty cells before the 1st
+  for (let i = 0; i < startOffset; i++) {
+    const blank = document.createElement('div');
+    blank.className = 'cal-day cal-empty';
+    grid.appendChild(blank);
+  }
+
+  // Day cells
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${d}/${month + 1}/${year}`;
+    const isAbs = absentSet.has(key);
+    const isTod = d === today;
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' +
+      (isAbs ? ' cal-absent' : '') +
+      (isTod ? ' cal-today' : '');
+    cell.textContent = d;
+    grid.appendChild(cell);
+  }
+
+  // ── Absence list below calendar ──────────────────────────
+  const list = document.getElementById('calendarAbsenceList');
+  if (dates.length === 0) {
+    list.innerHTML = '<p class="cal-empty-msg">Nenhuma falta registrada.</p>';
+  } else {
+    list.innerHTML = dates
+      .slice()
+      .reverse() // most recent first
+      .map(d => `<div class="cal-absence-item">
+                   <span class="cal-absence-dot"></span>${d}
+                 </div>`)
+      .join('');
+  }
+
+  document.getElementById('calendarModal').classList.add('open');
+}
+
+function closeCalendarModal() {
+  document.getElementById('calendarModal').classList.remove('open');
+}
+
+function handleCalendarOverlayClick(e) {
+  if (e.target.id === 'calendarModal') closeCalendarModal();
 }
 
 /* ══════════════════════════════
