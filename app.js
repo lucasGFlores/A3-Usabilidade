@@ -57,7 +57,6 @@ function loadData() {
 }
 
 let subjects = loadData();
-console.log(subjects)
 let idx = 0; // currently visible slide index
 
 
@@ -65,12 +64,12 @@ let idx = 0; // currently visible slide index
    Truancy
 ══════════════════════════════ */
 function registerTruancy(subject, date) {
-  console.log("Truancy: " + truancy_data)
   if (!truancy_data.has(subject.name)) {
     truancy_data.set(subject.name, [date]);
     return;
   }
-  truancy_data.set(subject.name, [...truancy_data.get(subject.name), date])
+  // Append date to existing array (was spread incorrectly before)
+  truancy_data.set(subject.name, [...truancy_data.get(subject.name), date]);
 }
 
 function getTruancy(subject) {
@@ -81,15 +80,49 @@ function getTruancy(subject) {
 }
 
 /* ══════════════════════════════
-   PERSISTENCE (localStorage) <-------- truancy ------>
+   PERSISTENCE (localStorage) — truancy
+   Uses a reactive Map via Proxy, similar to React's useEffect:
+   any .set() on truancy_data automatically persists to localStorage.
 ══════════════════════════════ */
 
 const STORAGE_KEY_TRUANCY = 'faltacount_truancy';
 
-/** Saves the current subjects array to localStorage. */
-function saveTruancyData() {
-  localStorage.setItem(STORAGE_KEY_TRUANCY, JSON.stringify(Array.from(truancy_data.entries())));
+/**
+ * Creates a Map that runs `effect(map)` automatically after every .set().
+ * The effect receives the updated Map so it can decide what to do
+ * (e.g. persist, re-render, log) — same mental model as useEffect.
+ *
+ * @param {Map}      initialMap  — the Map to wrap
+ * @param {Function} effect      — callback(map) fired after every mutation
+ * @returns {Proxy<Map>}
+ */
+function createReactiveMap(initialMap, effect) {
+  return new Proxy(initialMap, {
+    get(target, prop) {
+      const value = target[prop];
+      // Intercept only .set() — bind it so `this` stays correct,
+      // then trigger the effect after the native set runs.
+      if (prop === 'set') {
+        return function (...args) {
+          Map.prototype.set.apply(target, args);
+          effect(target);
+          return target; // keep Map's chainable return value
+        };
+      }
+      // For everything else (.get, .has, .entries, Symbol.iterator…)
+      // return the native value, bound so methods work correctly.
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  });
 }
+
+function persistTruancy(map) {
+  localStorage.setItem(
+    STORAGE_KEY_TRUANCY,
+    JSON.stringify(Array.from(map.entries()))
+  );
+}
+
 function loadTruancyData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_TRUANCY);
@@ -100,14 +133,14 @@ function loadTruancyData() {
   } catch (e) {
     console.warn('FaltaCount: could not read localStorage', e);
   }
-  // Default first-run data
-  const truancy_data = new Map();
-  truancy_data.set("Usabilidade", [])
-  return truancy_data;
+  const defaults = new Map();
+  defaults.set('Usabilidade', []);
+  return defaults;
 }
 
-const truancy_data = loadTruancyData();
-console.log(truancy_data)
+// Every .set() on truancy_data automatically calls persistTruancy —
+// no manual saveTruancyData() calls needed anywhere.
+const truancy_data = createReactiveMap(loadTruancyData(), persistTruancy);
 
 
 /* ══════════════════════════════
@@ -454,7 +487,6 @@ function registrarFalta() {
   registerTruancy(s, new Date().toLocaleDateString('pt-BR'))
   updateUI();
   saveData();
-  saveTruancyData();
   showToast(`Falta registrada. Restam ${s.faltas} faltas.`);
 }
 
