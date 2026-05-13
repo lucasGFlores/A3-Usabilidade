@@ -378,6 +378,7 @@ function navigateTo(to) {
   updateDots();
   updateArrows();
   updateUI();
+  updateFaltaBtn();
 }
 
 /* ══════════════════════════════
@@ -480,14 +481,77 @@ function toggleTheme() {
    ABSENCE REGISTRATION
 ══════════════════════════════ */
 
+/** Returns today's date formatted as 'DD/MM/YYYY' (same format used by registerTruancy). */
+function todayDateString() {
+  return new Date().toLocaleDateString('pt-BR');
+}
+
+/**
+ * Updates the "Faltei hoje" button to reflect whether the current subject
+ * already has an absence recorded for today.
+ */
+function updateFaltaBtn() {
+  const s = subjects[idx];
+  const btn = document.querySelector('.btn-faltei');
+  if (!btn) return;
+
+  const dates = getTruancy(s);
+  const alreadyAbsent = dates.includes(todayDateString());
+
+  if (alreadyAbsent) {
+    btn.classList.add('undone');
+    btn.innerHTML = `
+      <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#icon-alert-circle"/></svg>
+      Desfazer falta
+    `;
+    btn.setAttribute('onclick', 'desfazerFalta()');
+  } else {
+    btn.classList.remove('undone');
+    btn.innerHTML = `
+      <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#icon-alert-circle"/></svg>
+      Faltei hoje
+    `;
+    btn.setAttribute('onclick', 'registrarFalta()');
+  }
+}
+
 function registrarFalta() {
   const s = subjects[idx];
   if (s.faltas <= 0) { showToast('Sem faltas restantes!'); return; }
+
+  const today = todayDateString();
+  const dates = getTruancy(s);
+
+  // Guard: don't register twice for the same day
+  if (dates.includes(today)) { showToast('Falta já registrada hoje!'); return; }
+
   s.faltas--;
-  registerTruancy(s, new Date().toLocaleDateString('pt-BR'))
+  registerTruancy(s, today);
   updateUI();
   saveData();
+  updateFaltaBtn();
   showToast(`Falta registrada. Restam ${s.faltas} faltas.`);
+}
+
+function desfazerFalta() {
+  const s = subjects[idx];
+  const today = todayDateString();
+  const dates = getTruancy(s);
+  const index = dates.indexOf(today);
+
+  if (index === -1) { showToast('Nenhuma falta de hoje para desfazer.'); return; }
+
+  // Remove today's date from the truancy list
+  const newDates = [...dates];
+  newDates.splice(index, 1);
+  truancy_data.set(s.name, newDates);
+
+  // Restore the absence count
+  s.faltas = Math.min(s.faltas + 1, MAX);
+  updateUI();
+  saveData();
+  updateFaltaBtn();
+  showToast('Falta desfeita!');
 }
 
 /* ══════e═══════════════════════
@@ -702,3 +766,4 @@ function showToast(msg) {
 ══════════════════════════════ */
 
 renderTrack();
+updateFaltaBtn();

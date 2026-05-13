@@ -97,6 +97,13 @@ body.dark .btn-faltei {
   border-color: rgba(221, 34, 34, 0.25);
 }
 
+/* Undo state — dark */
+body.dark .btn-faltei.undone {
+  background: rgba(120, 120, 140, 0.18);
+  color: #9a9ab0;
+  border-color: rgba(120, 120, 140, 0.28);
+}
+
 body.dark .add-btn {
   background: #2e3ed1;
 }
@@ -266,6 +273,13 @@ body.light .btn-faltei {
   background: rgba(221, 34, 34, 0.07);
   color: #841515;
   border-color: rgba(221, 34, 34, 0.18);
+}
+
+/* Undo state — light */
+body.light .btn-faltei.undone {
+  background: rgba(110, 110, 130, 0.1);
+  color: #7a7a8a;
+  border-color: rgba(110, 110, 130, 0.22);
 }
 
 body.light .add-btn {
