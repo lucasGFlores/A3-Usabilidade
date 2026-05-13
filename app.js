@@ -523,13 +523,168 @@ function addSubject() {
   showToast(`"${name}" adicionada!`);
 }
 /* ══════════════════════════════
-   CALENDAR
+   CALENDAR MODAL
 ══════════════════════════════ */
-function calendar() {
-  const s = subjects[idx]
-  const UCs_truancys_date = getTruancy(s)
-  showToast("Datas de falta: " + UCs_truancys_date)
+
+// Weekday number for each day name (0=Mon … 6=Sun, matching cal grid)
+
+const MONTH_NAMES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+// Tracks which year/month is currently displayed in the calendar
+let calYear = null;
+let calMonth = null; // 0-based
+
+/**
+ * Builds a lookup key for a date: 'D/M/YYYY'
+ */
+function dateKey(day, month1based, year) {
+  return `${day}/${month1based}/${year}`;
 }
+
+/**
+ * Renders the calendar grid for the given year/month.
+ * Highlights absent days (red) and class days (subtle tint + green dot).
+ */
+function renderCalendarGrid(year, month, absentSet, classDayNum) {
+  const today = new Date();
+  const todayKey = dateKey(today.getDate(), today.getMonth() + 1, today.getFullYear());
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayJS = new Date(year, month, 1).getDay(); // 0=Sun
+  const startOffset = (firstDayJS + 6) % 7;              // shift to Mon=0
+
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+
+  // Weekday headers
+  ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].forEach(d => {
+    const th = document.createElement('div');
+    th.className = 'cal-weekday';
+    th.textContent = d;
+    grid.appendChild(th);
+  });
+
+  // Empty cells before the 1st
+  for (let i = 0; i < startOffset; i++) {
+    const blank = document.createElement('div');
+    blank.className = 'cal-day cal-empty';
+    grid.appendChild(blank);
+  }
+
+  // Day cells
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = new Date(year, month, d);
+    const cellDow = (cellDate.getDay() + 6) % 7; // Mon=0
+    const key = dateKey(d, month + 1, year);
+    const isAbsent = absentSet.has(key);
+    const isToday = key === todayKey;
+    const isClassDay = cellDow === classDayNum;
+
+    // A past class day that was not absent = present
+    const isPast = cellDate < today && cellDate.toDateString() !== today.toDateString();
+    const isPresent = isClassDay && isPast && !isAbsent;
+
+    const cell = document.createElement('div');
+    const classes = ['cal-day'];
+    if (isAbsent) classes.push('cal-absent');
+    if (isToday) classes.push('cal-today');
+    if (isClassDay) classes.push('cal-class-day');
+    if (isPresent) classes.push('cal-present');
+    cell.className = classes.join(' ');
+    cell.textContent = d;
+    grid.appendChild(cell);
+  }
+
+  // Update nav button states (don't go beyond current month)
+  const now = new Date();
+  document.getElementById('calNavNext').disabled =
+    year === now.getFullYear() && month === now.getMonth();
+}
+
+/**
+ * Opens the calendar modal for the current subject.
+ */
+function openCalendarModal() {
+  const s = subjects[idx];
+  const dates = getTruancy(s); // ['DD/MM/YYYY', ...]
+
+  // ── Header ──────────────────────────────────────────────
+  document.getElementById('calendarTitle').textContent = s.name;
+  document.getElementById('calendarSubtitle').textContent = s.day;
+
+  // Day dot color matches the ring status color
+  const dot = document.getElementById('calendarDayDot');
+  if (dot) dot.style.background = statusColor(s.faltas);
+
+  // ── Normalise absence dates into a Set of 'D/M/YYYY' keys ──
+  const absentSet = new Set(
+    dates.map(d => {
+      const [dd, mm, yyyy] = d.split('/');
+      return dateKey(parseInt(dd), parseInt(mm), yyyy);
+    })
+  );
+
+  // ── Init to current month ────────────────────────────────
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+
+  // ── Render grid ──────────────────────────────────────────
+  const classDayNum = DAY_ORDER[s.day] ?? -1;
+  renderCalendarGrid(calYear, calMonth, absentSet, classDayNum);
+  document.getElementById('calendarMonthLabel').textContent =
+    `${MONTH_NAMES[calMonth]} ${calYear}`;
+
+  // ── Attach month-shift with closure over absentSet ───────
+  // Store on window so shiftCalendarMonth() can call it
+  window._calAbsentSet = absentSet;
+  window._calClassDayNum = classDayNum;
+
+  // ── Absence history list ─────────────────────────────────
+  const list = document.getElementById('calendarAbsenceList');
+  if (dates.length === 0) {
+    list.innerHTML = '<p class="cal-empty-msg">Nenhuma falta registrada.</p>';
+  } else {
+    list.innerHTML = [...dates]
+      .reverse()
+      .map(d => `<div class="cal-absence-item">
+                   <span class="cal-absence-dot"></span>${d}
+                 </div>`)
+      .join('');
+  }
+
+  document.getElementById('calendarModal').classList.add('open');
+}
+
+/**
+ * Shifts the displayed month by `delta` (-1 = previous, +1 = next).
+ * Called by the nav buttons in the HTML.
+ */
+function shiftCalendarMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+
+  document.getElementById('calendarMonthLabel').textContent =
+    `${MONTH_NAMES[calMonth]} ${calYear}`;
+
+  renderCalendarGrid(
+    calYear, calMonth,
+    window._calAbsentSet,
+    window._calClassDayNum
+  );
+}
+
+function closeCalendarModal() {
+  document.getElementById('calendarModal').classList.remove('open');
+}
+
+function handleCalendarOverlayClick(e) {
+  if (e.target.id === 'calendarModal') closeCalendarModal();
+}
+
 
 /* ══════════════════════════════
    TOAST
