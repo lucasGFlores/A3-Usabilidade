@@ -1394,3 +1394,137 @@ body.dark .cal-empty-msg {
 body.light .cal-empty-msg {
   color: #828be3;
 }
+
+
+/* ══════════════════════════════
+   DESKTOP LAYOUT  (≥ 768 px)
+══════════════════════════════ */
+
+@media (min-width: 768px) {
+
+  body {
+    align-items: center;
+    min-height: 100dvh;
+  }
+
+  /* ── Phone frame becomes a wide card ── */
+  .phone-frame {
+    width: 100%;
+    max-width: 860px;
+    height: auto;
+    min-height: unset;
+    border-radius: 28px;
+    border: 2px solid;
+    margin: 32px auto;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "header  header"
+      "content actions"
+      "arrows  actions"
+      "dots    dots";
+  }
+
+  /* ── Header spans full width ── */
+  .header-row {
+    grid-area: header;
+    padding: 18px 28px 10px;
+  }
+
+  /* ── Left column: swipe viewport ── */
+  .swipe-viewport {
+    grid-area: content;
+    align-self: stretch;
+  }
+
+  /* Slide inner layout: stack card above ring, same as mobile */
+  .swipe-slide {
+    padding-bottom: 24px;
+  }
+
+  /* Subject card: a bit more breathing room */
+  .subject-card {
+    margin: 12px 24px 0;
+  }
+
+  /* Ring section centred in its column */
+  .circle-section {
+    margin: 32px 0 0;
+  }
+
+  /* Swipe arrows in their own row, left column */
+  .swipe-arrows {
+    grid-area: arrows;
+    padding: 0 20px 16px;
+    margin: 0;
+  }
+
+  /* ── Divider hidden on desktop (column border replaces it) ── */
+  .divider {
+    display: none;
+  }
+
+  /* ── Right column: actions (spans content + arrows rows) ── */
+  .bottom-container {
+    grid-area: actions;
+    grid-row: 2 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-left: 1px solid;
+  }
+
+  body.dark .bottom-container {
+    background-color: #06091d;
+    border-color: rgba(46, 62, 209, 0.2);
+  }
+
+  body.light .bottom-container {
+    background-color: #f0f1fc;
+    border-color: rgba(88, 101, 218, 0.12);
+  }
+
+  .bottom-actions {
+    width: 100%;
+    padding: 32px 28px;
+    gap: 14px;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Buttons fill the right panel width */
+  .btn-primary {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 15px;
+  }
+
+  /* ── Nav dots at the bottom, full width ── */
+  .nav-dots {
+    grid-area: dots;
+    padding: 14px 0 18px;
+    border-top: 1px solid;
+  }
+
+  body.dark .nav-dots {
+    border-color: rgba(46, 62, 209, 0.2);
+  }
+
+  body.light .nav-dots {
+    border-color: rgba(88, 101, 218, 0.1);
+  }
+
+  /* ── Slightly larger ring on bigger screen ── */
+  .ring-wrapper,
+  .ring-svg {
+    width: 180px;
+    height: 180px;
+  }
+
+  .ring-number {
+    font-size: 56px;
+  }
+}
