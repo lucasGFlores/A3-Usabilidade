@@ -776,6 +776,11 @@ body.light .bottom-container {
   z-index: 100;
   align-items: flex-end;
   justify-content: center;
+  transition:
+    display 0.4s allow-discrete,
+    opacity 0.4s ease,
+    transform 0.4s ease;
+  animation: fadeOut 0.4s ease;
 }
 
 .modal-overlay.open {
@@ -788,10 +793,15 @@ body.light .bottom-container {
   padding: 28px 24px 40px;
   width: 100%;
   max-width: 360px;
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid;
   border-bottom: none;
-  transition: background 0.4s, border-color 0.4s;
+  transition: background 0.3s, border-color 0.3s;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.open .modal-sheet {
+
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-handle {
@@ -949,6 +959,16 @@ body.light .bottom-container {
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -956,6 +976,16 @@ body.light .bottom-container {
 
   to {
     transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
   }
 }
 

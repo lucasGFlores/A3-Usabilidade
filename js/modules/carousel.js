@@ -2,16 +2,16 @@
 //  carousel.js — navigation, swipe, dots, arrow buttons, keyboard
 // ─────────────────────────────────────────
 
-import { state }                           from './state.js';
+import { state } from './state.js';
 import { renderTrack, refreshSlides, initRing } from './slides.js';
 
 // ── DOM references ────────────────────────────────────────────────────────────
 
-const track    = document.getElementById('swipeTrack');
-const navDots  = document.getElementById('navDots');
+const track = document.getElementById('swipeTrack');
+const navDots = document.getElementById('navDots');
 const arrowPrev = document.getElementById('arrowPrev');
 const arrowNext = document.getElementById('arrowNext');
-const arrowsEl  = document.getElementById('swipeArrows');
+const arrowsEl = document.getElementById('swipeArrows');
 
 // ── Slide positioning ─────────────────────────────────────────────────────────
 
@@ -90,6 +90,12 @@ export function navigateTo(to) {
   onNavigate?.();
 }
 
+export function navigateToRight() {
+  navigateTo(state.idx + 1)
+}
+export function navigateToLeft() {
+  navigateTo(state.idx - 1)
+}
 /**
  * Full carousel initialisation: re-renders the track, dots, arrows and
  * positions without animation. Called after the subjects list changes shape.
@@ -106,17 +112,17 @@ export function initCarousel() {
 const SWIPE_THRESHOLD = 50;   // px to commit a swipe
 const DRAG_RESISTANCE = 0.3;  // pull-back factor at first/last slide
 
-let touchStartX  = 0;
-let touchStartY  = 0;
-let dragDeltaX   = 0;
-let isDragging   = false;
+let touchStartX = 0;
+let touchStartY = 0;
+let dragDeltaX = 0;
+let isDragging = false;
 let isHorizontal = null; // null = undecided
 
 function pointerStart(clientX, clientY) {
-  touchStartX  = clientX;
-  touchStartY  = clientY;
-  dragDeltaX   = 0;
-  isDragging   = true;
+  touchStartX = clientX;
+  touchStartY = clientY;
+  dragDeltaX = 0;
+  isDragging = true;
   isHorizontal = null;
   track.style.transition = 'none';
   track.classList.add('dragging');
@@ -147,26 +153,26 @@ function pointerEnd() {
   track.classList.remove('dragging');
   if (!isHorizontal) return;
 
-  if      (dragDeltaX < -SWIPE_THRESHOLD && state.idx < state.subjects.length - 1) navigateTo(state.idx + 1);
-  else if (dragDeltaX >  SWIPE_THRESHOLD && state.idx > 0)                          navigateTo(state.idx - 1);
-  else    goToSlide(state.idx);
+  if (dragDeltaX < -SWIPE_THRESHOLD && state.idx < state.subjects.length - 1) navigateTo(state.idx + 1);
+  else if (dragDeltaX > SWIPE_THRESHOLD && state.idx > 0) navigateTo(state.idx - 1);
+  else goToSlide(state.idx);
 }
 
 // Touch
-track.addEventListener('touchstart',  e => pointerStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-track.addEventListener('touchmove',   e => { pointerMove(e.touches[0].clientX, e.touches[0].clientY); if (isHorizontal) e.preventDefault(); }, { passive: false });
-track.addEventListener('touchend',    pointerEnd);
+track.addEventListener('touchstart', e => pointerStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+track.addEventListener('touchmove', e => { pointerMove(e.touches[0].clientX, e.touches[0].clientY); if (isHorizontal) e.preventDefault(); }, { passive: false });
+track.addEventListener('touchend', pointerEnd);
 track.addEventListener('touchcancel', pointerEnd);
 
 // Mouse (desktop testing)
 track.addEventListener('mousedown', e => pointerStart(e.clientX, e.clientY));
 window.addEventListener('mousemove', e => { if (isDragging) pointerMove(e.clientX, e.clientY); });
-window.addEventListener('mouseup',   pointerEnd);
+window.addEventListener('mouseup', pointerEnd);
 
 // ── Keyboard navigation ───────────────────────────────────────────────────────
 
 document.addEventListener('keydown', e => {
   if (document.getElementById('addModal').classList.contains('open')) return;
-  if (e.key === 'ArrowLeft')  navigateTo(state.idx - 1);
+  if (e.key === 'ArrowLeft') navigateTo(state.idx - 1);
   if (e.key === 'ArrowRight') navigateTo(state.idx + 1);
 });

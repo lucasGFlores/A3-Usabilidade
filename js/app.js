@@ -10,8 +10,8 @@ import { state } from './modules/state.js';
 import { loadSubjects } from './modules/storage.js';
 import { toggleTheme, showToast } from './modules/ui.js';
 import {
-  initCarousel, navigateTo,
-  setNavigationCallback
+  initCarousel,
+  setNavigationCallback, navigateToRight, navigateToLeft
 } from './modules/carousel.js';
 import { updateActiveSlide } from './modules/slides.js';
 import {
@@ -44,7 +44,6 @@ updateFaltaBtn();
 // ── Global re-exports (required by HTML inline onclick attributes) ─────────────
 
 window.toggleTheme = toggleTheme;
-window.navigateTo = navigateTo;
 window.registrarFalta = registrarFalta;
 window.desfazerFalta = desfazerFalta;
 window.openAddModal = openAddModal;
@@ -57,3 +56,5 @@ window.shiftCalendarMonth = shiftCalendarMonth;
 window.handleCalendarOverlayClick = handleCalendarOverlayClick;
 window.showSecondDay = showSecondDay;
 window.hideSecondDay = hideSecondDay;
+window.navigateToRight = navigateToRight;
+window.navigateToLeft = navigateToLeft;
