@@ -136,6 +136,7 @@
       <input  class="modal-input"  id="newSubjectName" type="text"
               placeholder="Nome da matéria" autocomplete="off"/>
 
+      <!-- Primeiro dia -->
       <select class="modal-select" id="newSubjectDay">
         <option value="">Dia da semana</option>
         <option value="domingo">Domingo</option>
@@ -146,6 +147,26 @@
         <option value="sexta-feira">Sexta-feira</option>
         <option value="sábado">Sábado</option>
       </select>
+
+      <!-- Segundo dia (oculto por padrão) -->
+      <div id="secondDayRow" style="display:none; align-items:center; gap:8px;">
+        <select class="modal-select" id="newSubjectDay2">
+          <option value="">Segundo dia</option>
+          <option value="domingo">Domingo</option>
+          <option value="segunda-feira">Segunda-feira</option>
+          <option value="terça-feira">Terça-feira</option>
+          <option value="quarta-feira">Quarta-feira</option>
+          <option value="quinta-feira">Quinta-feira</option>
+          <option value="sexta-feira">Sexta-feira</option>
+          <option value="sábado">Sábado</option>
+        </select>
+        <button id="removeDayBtn" class="btn-remove-day" onclick="hideSecondDay()" aria-label="Remover segundo dia">✕</button>
+      </div>
+
+      <!-- Botão para expandir segundo dia -->
+      <button id="addDayBtn" class="btn-add-day" onclick="showSecondDay()">
+        + Adicionar outro dia
+      </button>
 
       <button class="btn-confirm" onclick="addSubject()">Adicionar matéria</button>
       <button class="btn-cancel"  onclick="closeAddModal()">Cancelar</button>

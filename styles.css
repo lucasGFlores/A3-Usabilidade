@@ -194,6 +194,29 @@ body.dark .toast {
   border-color: rgba(130, 139, 227, 0.3);
 }
 
+/* btn-add-day — dark */
+body.dark .btn-add-day {
+  background: transparent;
+  border-color: rgba(130, 139, 227, 0.35);
+  color: #828be3;
+}
+
+body.dark .btn-add-day:hover {
+  background: rgba(46, 62, 209, 0.2);
+  border-color: #5865da;
+  color: #abb2ed;
+}
+
+/* btn-remove-day — dark */
+body.dark .btn-remove-day {
+  background: rgba(46, 62, 209, 0.2);
+  color: #828be3;
+}
+
+body.dark .btn-remove-day:hover {
+  color: #ea7b7b;
+}
+
 
 /* ══════════════════════════════
    LIGHT THEME
@@ -370,6 +393,29 @@ body.light .toast {
   background: #eaecfa;
   color: #1c257d;
   border-color: rgba(88, 101, 218, 0.25);
+}
+
+/* btn-add-day — light */
+body.light .btn-add-day {
+  background: transparent;
+  border-color: rgba(88, 101, 218, 0.3);
+  color: #5865da;
+}
+
+body.light .btn-add-day:hover {
+  background: rgba(88, 101, 218, 0.08);
+  border-color: #2e3ed1;
+  color: #2e3ed1;
+}
+
+/* btn-remove-day — light */
+body.light .btn-remove-day {
+  background: #eaecfa;
+  color: #828be3;
+}
+
+body.light .btn-remove-day:hover {
+  color: #b01c1c;
 }
 
 
@@ -787,12 +833,56 @@ body.light .bottom-container {
   padding: 13px 16px;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   outline: none;
   appearance: none;
   cursor: pointer;
   border: 1px solid;
   transition: background 0.4s, color 0.4s, border-color 0.3s;
+}
+
+
+/* ── Second day row ─────────────────────── */
+.second-day-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.second-day-row .modal-select {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* btn-add-day — estrutura base */
+.btn-add-day {
+  width: 100%;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px dashed;
+  margin-bottom: 20px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+/* btn-remove-day — estrutura base */
+.btn-remove-day {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
 }
 
 .btn-confirm {
@@ -1527,4 +1617,12 @@ body.light .cal-empty-msg {
   .ring-number {
     font-size: 56px;
   }
+}
+
+.modal-select#newSubjectDay2 {
+  margin-bottom: 0;
+}
+
+#secondDayRow {
+  margin-bottom: 20px;
 }
