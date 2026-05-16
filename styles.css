@@ -425,8 +425,8 @@ body.light .btn-remove-day:hover {
 
 .phone-frame {
   width: 100vw;
-  height: 100vw;
-  min-height: 720px;
+  min-height: 100dvh;
+  min-height: auto;
   /* border-radius: 40px; */
   /* overflow: hidden; */
   /* position: relative; */
@@ -691,8 +691,8 @@ body.light .icon-moon {
 }
 
 .bottom-container {
-  height: 100%;
   transition: background 0.4s;
+  height: 100%;
 }
 
 body.dark .bottom-container {
