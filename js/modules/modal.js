@@ -8,6 +8,8 @@ import { initCarousel } from './carousel.js';
 import { showConfirm, showToast } from './ui.js';
 
 const modalEl = document.getElementById('addModal');
+const modalTittle = document.getElementById('modalTitle');
+const modalDescription = document.querySelector(".modal-sub");
 const nameInput = document.getElementById('newSubjectName');
 const daySelect = document.getElementById('newSubjectDay');
 const day2Row = document.getElementById('secondDayRow');
@@ -40,11 +42,13 @@ function setHideButtonEditClassMode() {
 // ── Open / close (add) ────────────────────────────────────────────────────────
 
 export function openAddModal() {
+  modalTittle.textContent = "Nova matéria";
+  modalDescription.textContent = "Adicione uma matéria para acompanhar.";
+  btnConfirm.textContent = "Adicionar matéria"
+  _confirm_button_callback = addSubject;
   nameInput.value = '';
   daySelect.value = '';
   day2Select.value = '';
-  btnConfirm.value = "Adicionar matéria"
-  _confirm_button_callback = addSubject;
   hideSecondDay()
   setHideButtonAddClassMode();
   modalEl.classList.add('open');
@@ -117,11 +121,13 @@ export function addSubject() {
 export function openEditModal(name) {
   const entries = state.subjects.filter(s => s.name === name);
   if (!entries.length) return;
+  modalTittle.textContent = "Editar matéria";
+  modalDescription.textContent = `Altere o nome ou o dia da semana dessa matéria. ${entries.length >= 2 ? "\nCaso retire o segundo dia da matéria e salvar ela será removida." : ""}`;
   btnConfirm.textContent = "Editar matéria"
-  setHideButtonEditClassMode();
   _confirm_button_callback = confirmEditSubject;
   _editing_original_name = name;
   _qtd_days_on_a_class_per_week = entries.length;
+  setHideButtonEditClassMode();
 
   nameInput.value = name;
   daySelect.value = entries[0].day;

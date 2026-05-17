@@ -595,6 +595,11 @@ body.light .icon-moon {
   stroke-linejoin: round;
 }
 
+.subject-delete-btn {
+  right: 55px;
+
+}
+
 .subject-name {
   font-family: 'Sora', sans-serif;
   font-size: 22px;

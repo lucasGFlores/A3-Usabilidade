@@ -44,7 +44,7 @@ function statusBadge(ratio) {
  * @type {((name: string) => void) | null}
  */
 let _onEditSubject = null;
-
+let _onDeleteSubject = null;
 /**
  * Registra a função que será chamada ao clicar no botão de editar.
  * Chame isso no app.js antes de initCarousel().
@@ -52,6 +52,9 @@ let _onEditSubject = null;
  */
 export function setOnEditSubject(fn) {
   _onEditSubject = fn;
+}
+export function setOnDeleteSubject(fn) {
+  _onDeleteSubject = fn;
 }
 
 // ── Slide builder (createElement) ────────────────────────────────────────────
@@ -117,10 +120,28 @@ export function buildSlide(s, active) {
     e.stopPropagation();
     if (_onEditSubject) _onEditSubject(s.name);
   });
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'subject-edit-btn subject-delete-btn';
+  deleteBtn.setAttribute('aria-label', 'Deletar matéria');
+  deleteBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+      <path d="M10 11v6"/>
+      <path d="M14 11v6"/>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </svg>`;
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (_onDeleteSubject) _onDeleteSubject(s.name);
+  });
 
   card.appendChild(nameEl);
   card.appendChild(dayRow);
   card.appendChild(editBtn);
+  card.appendChild(deleteBtn)
   frag.appendChild(card);
 
   // ── circle-section ─────────────────────────────────────────────────────────
