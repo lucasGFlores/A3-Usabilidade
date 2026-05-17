@@ -214,9 +214,14 @@ export function buildSlide(s, active) {
 // ── Track rendering ───────────────────────────────────────────────────────────
 
 const track = document.getElementById('swipeTrack');
-
+const emptyState = document.getElementById('emptyState');
 export function renderTrack() {
   track.innerHTML = '';
+
+  const isEmpty = state.subjects.length === 0;
+  emptyState.classList.toggle('is-visible', isEmpty);
+  track.style.visibility = isEmpty ? 'hidden' : '';
+
   state.subjects.forEach((s, i) => {
     const slide = document.createElement('div');
     slide.className = 'swipe-slide';
@@ -224,7 +229,8 @@ export function renderTrack() {
     slide.appendChild(buildSlide(s, i === state.idx));
     track.appendChild(slide);
   });
-  initRing();
+
+  if (!isEmpty) initRing();
 }
 
 export function refreshSlides(prevIdx, affectedName) {

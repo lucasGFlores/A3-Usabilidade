@@ -1932,3 +1932,94 @@ body.light .confirm-btn-cancel {
 body.light .confirm-btn-cancel:hover {
   color: #5865da;
 }
+
+/* ══════════════════════════════
+   EMPTY STATE
+══════════════════════════════ */
+
+.empty-state {
+  display: none;
+  /* controlado via JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.empty-state.is-visible {
+  display: flex;
+}
+
+.empty-state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.empty-state-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.empty-state-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.empty-state-message {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.empty-state-message strong {
+  font-weight: 700;
+}
+
+/* dark */
+body.dark .empty-state-icon {
+  background: rgba(46, 62, 209, 0.2);
+  border: 1px solid rgba(130, 139, 227, 0.2);
+  color: #828be3;
+}
+
+body.dark .empty-state-title {
+  color: #d5d8f6;
+}
+
+body.dark .empty-state-message {
+  color: #828be3;
+}
+
+body.dark .empty-state-message strong {
+  color: #abb2ed;
+}
+
+/* light */
+body.light .empty-state-icon {
+  background: rgba(88, 101, 218, 0.08);
+  border: 1px solid rgba(88, 101, 218, 0.18);
+  color: #5865da;
+}
+
+body.light .empty-state-title {
+  color: #121954;
+}
+
+body.light .empty-state-message {
+  color: #5865da;
+}
+
+body.light .empty-state-message strong {
+  color: #2532a7;
+}

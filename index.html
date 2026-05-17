@@ -115,7 +115,19 @@
 
       </div><!-- /swipe-track -->
     </div><!-- /swipe-viewport -->
-    <div class="nav-dots" id="navDots" role="tablist" aria-label="Matérias"></div>
+    <!-- Empty state — aparece quando não há matérias -->
+<div class="empty-state" id="emptyState" aria-live="polite">
+  <div class="empty-state-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"/>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+    </svg>
+  </div>
+  <p class="empty-state-title">Nenhuma matéria</p>
+  <p class="empty-state-message">Toque em <strong>+</strong> para adicionar sua primeira matéria.</p>
+</div>
+      <div class="nav-dots" id="navDots" role="tablist" aria-label="Matérias"></div>
 
     <!-- Swipe hint arrow indicators -->
     <div class="swipe-arrows" id="swipeArrows">
