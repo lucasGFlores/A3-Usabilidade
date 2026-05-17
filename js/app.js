@@ -5,7 +5,7 @@
 //  that the HTML calls via inline onclick attributes.
 //  (Inline onclicks require globals; this is the single place that creates them.)
 // ─────────────────────────────────────────
-
+import { updateActiveSlide, setOnEditSubject } from './modules/slides.js';
 import { state } from './modules/state.js';
 import { loadSubjects } from './modules/storage.js';
 import { toggleTheme, showToast } from './modules/ui.js';
@@ -13,14 +13,13 @@ import {
   initCarousel,
   setNavigationCallback, navigateToRight, navigateToLeft
 } from './modules/carousel.js';
-import { updateActiveSlide } from './modules/slides.js';
 import {
   updateFaltaBtn, registrarFalta,
   desfazerFalta
 } from './modules/absences.js';
 import {
-  openAddModal, closeAddModal,
-  handleOverlayClick, addSubject, showSecondDay, hideSecondDay
+  openAddModal, openEditModal, closeAddModal,
+  handleOverlayClick, addSubject, showSecondDay, hideSecondDay, buttonCallback
 } from './modules/modal.js';
 import {
   openCalendarModal, closeCalendarModal,
@@ -37,7 +36,7 @@ setNavigationCallback(() => {
   updateActiveSlide();
   updateFaltaBtn();
 });
-
+setOnEditSubject((name) => openEditModal(name));
 initCarousel();
 updateFaltaBtn();
 
@@ -58,3 +57,4 @@ window.showSecondDay = showSecondDay;
 window.hideSecondDay = hideSecondDay;
 window.navigateToRight = navigateToRight;
 window.navigateToLeft = navigateToLeft;
+window.confirmButtonCallback = buttonCallback;

@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────
-//  modal.js — "add subject" modal
+//  modal.js — "add subject" modal + "edit subject" modal
 // ─────────────────────────────────────────
 
 import { state, MAX, sortSubjects, setFaltas, getFaltas } from './state.js';
-import { saveSubjects, saveFaltasByName, ensureFaltasDefaults } from './storage.js';
+import { saveSubjects, saveFaltasByName, truancyData } from './storage.js';
 import { initCarousel } from './carousel.js';
 import { showToast } from './ui.js';
 
@@ -14,14 +14,25 @@ const day2Row = document.getElementById('secondDayRow');
 const day2Select = document.getElementById('newSubjectDay2');
 const addDayBtn = document.getElementById('addDayBtn');
 const removeDayBtn = document.getElementById('removeDayBtn');
+const btnConfirm = document.querySelector(".btn-confirm")
 
-// ── Open / close ──────────────────────────────────────────────────────────────
+
+//
+let _confirm_button_callback = null;
+let _editingOriginalName = null;
+
+export function buttonCallback() {
+  _confirm_button_callback()
+}
+// ── Open / close (add) ────────────────────────────────────────────────────────
 
 export function openAddModal() {
   nameInput.value = '';
   daySelect.value = '';
   day2Select.value = '';
-  day2Row.style.display = 'none';
+  btnConfirm.value = "Adicionar matéria"
+  _confirm_button_callback = addSubject;
+  hideSecondDay()
   modalEl.classList.add('open');
 }
 
@@ -34,7 +45,7 @@ export function handleOverlayClick(e) {
   if (e.target.id === 'addModal') closeAddModal();
 }
 
-// ── Second day toggle ─────────────────────────────────────────────────────────
+// ── Second day toggle (add) ───────────────────────────────────────────────────
 
 export function showSecondDay() {
   day2Row.style.display = 'flex';
@@ -60,21 +71,17 @@ export function addSubject() {
   }
   if (day2 && day === day2) { showToast('Os dois dias não podem ser iguais.'); return; }
 
-  // Verifica se já existe uma aula com esse nome (para herdar as faltas)
   const existingFaltas = state.subjects.some(s => s.name === name)
     ? getFaltas(name)
     : MAX;
 
-  // Adiciona o primeiro dia
   const newSubject = { name, day };
   state.subjects.push(newSubject);
 
-  // Adiciona o segundo dia, se informado
   if (day2) {
     state.subjects.push({ name, day: day2 });
   }
 
-  // Garante que o contador compartilhado existe (usa o valor já existente ou MAX)
   setFaltas(name, existingFaltas);
 
   state.idx = sortSubjects(newSubject);
@@ -88,4 +95,76 @@ export function addSubject() {
     ? `"${name}" adicionada em ${day} e ${day2}!`
     : `"${name}" adicionada!`;
   showToast(msg);
+}
+
+// ── Open / close (edit) ───────────────────────────────────────────────────────
+
+export function openEditModal(name) {
+  const entries = state.subjects.filter(s => s.name === name);
+  if (!entries.length) return;
+  btnConfirm.textContent = "Editar matéria"
+  _confirm_button_callback = confirmEditSubject;
+  _editingOriginalName = name;
+
+  nameInput.value = name;
+  daySelect.value = entries[0].day;
+
+  if (entries.length >= 2) {
+    day2Select.value = entries[1].day;
+    showSecondDay();
+  } else {
+    hideSecondDay()
+  }
+  modalEl.classList.add('open');
+}
+
+export function closeEditModal() {
+  modalEl.classList.remove('open');
+  hideSecondDay();
+  _editingOriginalName = null;
+}
+
+export function handleEditOverlayClick(e) {
+  if (e.target.id === 'editModal') closeEditModal();
+}
+
+
+export function confirmEditSubject() {
+  const newName = nameInput.value.trim();
+  const newDay = daySelect.value;
+  const newDay2 = day2Select.value;
+  const oldName = _editingOriginalName;
+  if (!newName || !newDay) { showToast('Preencha todos os campos.'); return; }
+  if (day2Row.style.display !== 'none' && !newDay2) {
+    showToast('Selecione o segundo dia ou remova-o.'); return;
+  }
+  if (newDay2 && newDay === newDay2) { showToast('Os dois dias não podem ser iguais.'); return; }
+
+  const nameConflict = newName !== oldName && state.subjects.some(s => s.name === newName);
+  if (nameConflict) { showToast('Já existe uma matéria com esse nome.'); return; }
+
+  // Remove entradas antigas e reinsere com novos dados
+  state.subjects = state.subjects.filter(s => s.name !== oldName);
+  const firstEntry = { name: newName, day: newDay };
+  state.subjects.push(firstEntry);
+  if (newDay2) state.subjects.push({ name: newName, day: newDay2 });
+
+  // Migra faltas e histórico se o nome mudou
+  if (newName !== oldName) {
+    setFaltas(newName, getFaltas(oldName));
+    delete state.faltasByName[oldName];
+
+    const oldDates = truancyData.get(oldName) ?? [];
+    truancyData.set(newName, oldDates);
+    truancyData.set(oldName, []);
+  }
+
+  state.idx = sortSubjects(firstEntry);
+
+  closeEditModal();
+  saveSubjects();
+  saveFaltasByName();
+  initCarousel();
+
+  showToast(`"${newName}" atualizada!`);
 }

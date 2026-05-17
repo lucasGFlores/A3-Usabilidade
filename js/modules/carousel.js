@@ -165,7 +165,10 @@ track.addEventListener('touchend', pointerEnd);
 track.addEventListener('touchcancel', pointerEnd);
 
 // Mouse (desktop testing)
-track.addEventListener('mousedown', e => pointerStart(e.clientX, e.clientY));
+track.addEventListener('mousedown', e => {
+  if (e.target.closest('.subject-edit-btn')) return; // ← adicionar
+  pointerStart(e.clientX, e.clientY);
+});
 window.addEventListener('mousemove', e => { if (isDragging) pointerMove(e.clientX, e.clientY); });
 window.addEventListener('mouseup', pointerEnd);
 
