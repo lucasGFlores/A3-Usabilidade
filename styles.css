@@ -559,6 +559,47 @@ body.light .icon-moon {
   border-radius: 50%;
 }
 
+/* Edit button inside subject card */
+.subject-edit-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.subject-edit-btn:active {
+  transform: scale(0.88);
+}
+
+.subject-edit-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.subject-edit-btn svg {
+  width: 13px;
+  height: 13px;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.subject-delete-btn {
+  right: 55px;
+
+}
+
 .subject-name {
   font-family: 'Sora', sans-serif;
   font-size: 22px;
@@ -905,6 +946,10 @@ body.light .bottom-container {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
+}
+
+.btn-confirm.warning {
+  background: #dd2222 !important;
 }
 
 .btn-cancel {
@@ -1624,6 +1669,7 @@ body.light .cal-empty-msg {
 
   /* ── Nav dots at the bottom, full width ── */
   .nav-dots {
+    width: 50%;
     grid-area: dots;
     padding: 14px 0 18px;
     border-top: 1px solid;
@@ -1655,4 +1701,325 @@ body.light .cal-empty-msg {
 
 #secondDayRow {
   margin-bottom: 20px;
+}
+
+/*---- Popup style css*/
+/* Overlay */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  /* mobile: sobe do fundo */
+  justify-content: center;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  padding-inline: 12px;
+  background: rgba(6, 9, 29, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  /* Estado oculto */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+body.light .confirm-overlay {
+  background: rgba(30, 40, 120, 0.35);
+}
+
+/* Visível */
+.confirm-overlay.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Sheet */
+.confirm-sheet {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px 20px 16px 16px;
+  border: 1px solid rgba(130, 139, 227, 0.2);
+  padding: 0 0 8px;
+  overflow: hidden;
+
+  /* Dark default */
+  background: #0d1040;
+
+  /* Animação: sobe do fundo */
+  transform: translateY(32px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.25s ease;
+}
+
+body.light .confirm-sheet {
+  background: #fff;
+  border-color: rgba(88, 101, 218, 0.15);
+}
+
+.confirm-overlay.is-open .confirm-sheet {
+  transform: translateY(0);
+}
+
+/* Handle */
+.confirm-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  margin: 12px auto 0;
+  background: rgba(130, 139, 227, 0.3);
+}
+
+body.light .confirm-handle {
+  background: rgba(88, 101, 218, 0.2);
+}
+
+/* Ícone de aviso */
+.confirm-icon-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 0;
+}
+
+.confirm-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Variante destrutiva (vermelho) */
+.confirm-sheet[data-variant="danger"] .confirm-icon {
+  background: rgba(221, 34, 34, 0.15);
+}
+
+body.light .confirm-sheet[data-variant="danger"] .confirm-icon {
+  background: rgba(221, 34, 34, 0.1);
+}
+
+/* Variante neutra (azul) */
+.confirm-sheet[data-variant="neutral"] .confirm-icon {
+  background: rgba(46, 62, 209, 0.2);
+}
+
+body.light .confirm-sheet[data-variant="neutral"] .confirm-icon {
+  background: rgba(88, 101, 218, 0.12);
+}
+
+.confirm-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Textos */
+.confirm-body {
+  padding: 14px 24px 20px;
+  text-align: center;
+}
+
+.confirm-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+body.light .confirm-title {
+  color: #121954;
+}
+
+.confirm-message {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #828be3;
+  line-height: 1.55;
+}
+
+body.light .confirm-message {
+  color: #5865da;
+}
+
+/* Separador */
+.confirm-divider {
+  height: 1px;
+  margin: 0 20px;
+  background: rgba(46, 62, 209, 0.18);
+}
+
+body.light .confirm-divider {
+  background: rgba(88, 101, 218, 0.1);
+}
+
+/* Botões */
+.confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 8px;
+}
+
+.confirm-btn {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.12s, opacity 0.15s;
+  letter-spacing: 0.1px;
+}
+
+.confirm-btn:active {
+  transform: scale(0.97);
+}
+
+/* Botão confirmar — destrutivo */
+.confirm-sheet[data-variant="danger"] .confirm-btn-proceed {
+  background: rgba(221, 34, 34, 0.18);
+  color: #ea7b7b;
+  border: 1px solid rgba(221, 34, 34, 0.28);
+}
+
+.confirm-sheet[data-variant="danger"] .confirm-btn-proceed:hover {
+  background: rgba(221, 34, 34, 0.26);
+}
+
+body.light .confirm-sheet[data-variant="danger"] .confirm-btn-proceed {
+  background: rgba(221, 34, 34, 0.08);
+  color: #8a1515;
+  border-color: rgba(221, 34, 34, 0.2);
+}
+
+body.light .confirm-sheet[data-variant="danger"] .confirm-btn-proceed:hover {
+  background: rgba(221, 34, 34, 0.14);
+}
+
+/* Botão confirmar — neutro */
+.confirm-sheet[data-variant="neutral"] .confirm-btn-proceed {
+  background: #2e3ed1;
+  color: #fff;
+  border: 1px solid transparent;
+}
+
+.confirm-sheet[data-variant="neutral"] .confirm-btn-proceed:hover {
+  background: #5865da;
+}
+
+/* Botão cancelar */
+.confirm-btn-cancel {
+  background: transparent;
+  color: #828be3;
+  border: 1px solid transparent;
+  font-size: 13px;
+  padding: 12px 20px;
+}
+
+.confirm-btn-cancel:hover {
+  color: #abb2ed;
+}
+
+body.light .confirm-btn-cancel {
+  color: #828be3;
+}
+
+body.light .confirm-btn-cancel:hover {
+  color: #5865da;
+}
+
+/* ══════════════════════════════
+   EMPTY STATE
+══════════════════════════════ */
+
+.empty-state {
+  display: none;
+  /* controlado via JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.empty-state.is-visible {
+  display: flex;
+}
+
+.empty-state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.empty-state-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.empty-state-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.empty-state-message {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.empty-state-message strong {
+  font-weight: 700;
+}
+
+/* dark */
+body.dark .empty-state-icon {
+  background: rgba(46, 62, 209, 0.2);
+  border: 1px solid rgba(130, 139, 227, 0.2);
+  color: #828be3;
+}
+
+body.dark .empty-state-title {
+  color: #d5d8f6;
+}
+
+body.dark .empty-state-message {
+  color: #828be3;
+}
+
+body.dark .empty-state-message strong {
+  color: #abb2ed;
+}
+
+/* light */
+body.light .empty-state-icon {
+  background: rgba(88, 101, 218, 0.08);
+  border: 1px solid rgba(88, 101, 218, 0.18);
+  color: #5865da;
+}
+
+body.light .empty-state-title {
+  color: #121954;
+}
+
+body.light .empty-state-message {
+  color: #5865da;
+}
+
+body.light .empty-state-message strong {
+  color: #2532a7;
 }

@@ -150,3 +150,36 @@ export function registerTruancy(subject, date) {
 export function getTruancy(subject) {
   return truancyData.get(subject.name) ?? [];
 }
+
+// ── Delete subject ────────────────────────────────────────────────────────────
+
+/**
+ * Remove uma matéria completamente de todos os storages e do state.
+ * Após chamar, re-renderize o carrossel no app.js.
+ *
+ * @param {string} name — nome exato da matéria a deletar
+ * @returns {boolean} true se encontrou e deletou, false se não existia
+ */
+export function deleteSubject(name) {
+  const idx = state.subjects.findIndex(s => s.name === name);
+  if (idx === -1) return false;
+
+  // 1. Remove do array de subjects no state
+  state.subjects.splice(idx, 1);
+  saveSubjects();
+
+  // 2. Remove as faltas restantes
+  delete state.faltasByName[name];
+  saveFaltasByName();
+
+  // 3. Remove o histórico de ausências
+  truancyData.delete(name);
+  persistTruancy(truancyData);
+
+  // 4. Corrige o índice ativo se necessário
+  if (state.idx >= state.subjects.length) {
+    state.idx = Math.max(0, state.subjects.length - 1);
+  }
+
+  return true;
+}

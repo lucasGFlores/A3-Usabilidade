@@ -5,22 +5,21 @@
 //  that the HTML calls via inline onclick attributes.
 //  (Inline onclicks require globals; this is the single place that creates them.)
 // ─────────────────────────────────────────
-
+import { updateActiveSlide, setOnEditSubject, setOnDeleteSubject } from './modules/slides.js';
 import { state } from './modules/state.js';
-import { loadSubjects } from './modules/storage.js';
-import { toggleTheme, showToast } from './modules/ui.js';
+import { deleteSubject, loadSubjects } from './modules/storage.js';
+import { toggleTheme, showConfirm } from './modules/ui.js';
 import {
   initCarousel,
   setNavigationCallback, navigateToRight, navigateToLeft
 } from './modules/carousel.js';
-import { updateActiveSlide } from './modules/slides.js';
 import {
   updateFaltaBtn, registrarFalta,
   desfazerFalta
 } from './modules/absences.js';
 import {
-  openAddModal, closeAddModal,
-  handleOverlayClick, addSubject, showSecondDay, hideSecondDay
+  openAddModal, openEditModal, closeModal,
+  handleOverlayClick, addSubject, showSecondDay, hideSecondDay, buttonCallback, hideButtonCallback
 } from './modules/modal.js';
 import {
   openCalendarModal, closeCalendarModal,
@@ -37,7 +36,20 @@ setNavigationCallback(() => {
   updateActiveSlide();
   updateFaltaBtn();
 });
-
+setOnEditSubject((name) => openEditModal(name));
+setOnDeleteSubject((name) => {
+  showConfirm({
+    title: `Remover "${name}"?`,
+    message: 'A matéria e todo o histórico de faltas serão apagados permanentemente.',
+    proceedLabel: 'Sim, remover',
+    variant: 'danger',
+    onProceed: () => {
+      deleteSubject(name)
+      initCarousel()
+      // sua lógica de deleção aqui
+    }
+  });
+});
 initCarousel();
 updateFaltaBtn();
 
@@ -47,7 +59,7 @@ window.toggleTheme = toggleTheme;
 window.registrarFalta = registrarFalta;
 window.desfazerFalta = desfazerFalta;
 window.openAddModal = openAddModal;
-window.closeAddModal = closeAddModal;
+window.closeModal = closeModal;
 window.handleOverlayClick = handleOverlayClick;
 window.addSubject = addSubject;
 window.openCalendarModal = openCalendarModal;
@@ -58,3 +70,5 @@ window.showSecondDay = showSecondDay;
 window.hideSecondDay = hideSecondDay;
 window.navigateToRight = navigateToRight;
 window.navigateToLeft = navigateToLeft;
+window.confirmButtonCallback = buttonCallback;
+window.hideButtonCallback = hideButtonCallback;
