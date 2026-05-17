@@ -18,8 +18,8 @@ import {
   desfazerFalta
 } from './modules/absences.js';
 import {
-  openAddModal, openEditModal, closeAddModal,
-  handleOverlayClick, addSubject, showSecondDay, hideSecondDay, buttonCallback
+  openAddModal, openEditModal, closeModal,
+  handleOverlayClick, addSubject, showSecondDay, hideSecondDay, buttonCallback, hideButtonCallback
 } from './modules/modal.js';
 import {
   openCalendarModal, closeCalendarModal,
@@ -46,7 +46,7 @@ window.toggleTheme = toggleTheme;
 window.registrarFalta = registrarFalta;
 window.desfazerFalta = desfazerFalta;
 window.openAddModal = openAddModal;
-window.closeAddModal = closeAddModal;
+window.closeModal = closeModal;
 window.handleOverlayClick = handleOverlayClick;
 window.addSubject = addSubject;
 window.openCalendarModal = openCalendarModal;
@@ -58,3 +58,4 @@ window.hideSecondDay = hideSecondDay;
 window.navigateToRight = navigateToRight;
 window.navigateToLeft = navigateToLeft;
 window.confirmButtonCallback = buttonCallback;
+window.hideButtonCallback = hideButtonCallback;

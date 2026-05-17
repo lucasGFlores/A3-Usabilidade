@@ -5,7 +5,7 @@
 import { state, MAX, sortSubjects, setFaltas, getFaltas } from './state.js';
 import { saveSubjects, saveFaltasByName, truancyData } from './storage.js';
 import { initCarousel } from './carousel.js';
-import { showToast } from './ui.js';
+import { showConfirm, showToast } from './ui.js';
 
 const modalEl = document.getElementById('addModal');
 const nameInput = document.getElementById('newSubjectName');
@@ -19,10 +19,23 @@ const btnConfirm = document.querySelector(".btn-confirm")
 
 //
 let _confirm_button_callback = null;
-let _editingOriginalName = null;
-
+let _editing_original_name = null;
+let _hide_button_func = null;
+let _qtd_days_on_a_class_per_week = null
 export function buttonCallback() {
   _confirm_button_callback()
+}
+export function hideButtonCallback() {
+  _hide_button_func();
+}
+function setHideButtonAddClassMode() {
+  _hide_button_func = hideSecondDay;
+}
+function setHideButtonEditClassMode() {
+  _hide_button_func = () => {
+    btnConfirm.classList.add('warning')
+    hideSecondDay()
+  }
 }
 // ── Open / close (add) ────────────────────────────────────────────────────────
 
@@ -33,16 +46,18 @@ export function openAddModal() {
   btnConfirm.value = "Adicionar matéria"
   _confirm_button_callback = addSubject;
   hideSecondDay()
+  setHideButtonAddClassMode();
   modalEl.classList.add('open');
 }
 
-export function closeAddModal() {
+export function closeModal() {
   modalEl.classList.remove('open');
+  btnConfirm.classList.remove('warning');
   hideSecondDay();
 }
 
 export function handleOverlayClick(e) {
-  if (e.target.id === 'addModal') closeAddModal();
+  if (e.target.id === 'addModal') closeModal();
 }
 
 // ── Second day toggle (add) ───────────────────────────────────────────────────
@@ -86,7 +101,7 @@ export function addSubject() {
 
   state.idx = sortSubjects(newSubject);
 
-  closeAddModal();
+  closeModal();
   saveSubjects();
   saveFaltasByName();
   initCarousel();
@@ -103,8 +118,10 @@ export function openEditModal(name) {
   const entries = state.subjects.filter(s => s.name === name);
   if (!entries.length) return;
   btnConfirm.textContent = "Editar matéria"
+  setHideButtonEditClassMode();
   _confirm_button_callback = confirmEditSubject;
-  _editingOriginalName = name;
+  _editing_original_name = name;
+  _qtd_days_on_a_class_per_week = entries.length;
 
   nameInput.value = name;
   daySelect.value = entries[0].day;
@@ -120,8 +137,9 @@ export function openEditModal(name) {
 
 export function closeEditModal() {
   modalEl.classList.remove('open');
+  btnConfirm.classList.remove('warning');
   hideSecondDay();
-  _editingOriginalName = null;
+  _editing_original_name = null;
 }
 
 export function handleEditOverlayClick(e) {
@@ -133,7 +151,35 @@ export function confirmEditSubject() {
   const newName = nameInput.value.trim();
   const newDay = daySelect.value;
   const newDay2 = day2Select.value;
-  const oldName = _editingOriginalName;
+  const oldName = _editing_original_name;
+  const oldQtdDaysOnWeek = _qtd_days_on_a_class_per_week;
+  verifyEditInputs(newName, newDay, newDay2);
+
+  if (oldQtdDaysOnWeek >= 2 && newDay2 === "") {
+    showConfirm({
+
+      title: `Deseja modificar a "${_editing_original_name}" ?`,
+      message: "Não só o nome poderá ser alterado, como um dos dias serão deletados da sua agenda, Tem certeza que quer remover?",
+      proceedLabel: "Sim, modificar removendo dias",
+      cancelLabel: "Cancelar",
+      variant: "danger",
+      onProceed: () => SubmitChanges(newName, newDay, newDay2, oldName),
+      onCancel: () => { }
+    })
+    return;
+  }
+  showConfirm({
+    title: `Deseja modificar a "${_editing_original_name}" ?`,
+    message: "O nome e o dia da matéria serão alterados.",
+    proceedLabel: "Sim, modificar.",
+    cancelLabel: "Cancelar",
+    variant: "neutral",
+    onProceed: () => SubmitChanges(newName, newDay, newDay2, oldName),
+    onCancel: () => { }
+  });
+}
+function verifyEditInputs(newName, newDay, newDay2) {
+  const oldName = _editing_original_name;
   if (!newName || !newDay) { showToast('Preencha todos os campos.'); return; }
   if (day2Row.style.display !== 'none' && !newDay2) {
     showToast('Selecione o segundo dia ou remova-o.'); return;
@@ -143,6 +189,9 @@ export function confirmEditSubject() {
   const nameConflict = newName !== oldName && state.subjects.some(s => s.name === newName);
   if (nameConflict) { showToast('Já existe uma matéria com esse nome.'); return; }
 
+
+}
+function SubmitChanges(newName, newDay, newDay2, oldName) {
   // Remove entradas antigas e reinsere com novos dados
   state.subjects = state.subjects.filter(s => s.name !== oldName);
   const firstEntry = { name: newName, day: newDay };
