@@ -97,7 +97,7 @@ The product was designed phone-first and scales up, never the reverse.
 ## Tech Stack
 
 - Semantic HTML5
-- CSS3 — custom theming, layout, and animations, no framework
+- CSS3 custom theming, layout, and animations, no framework
 - Vanilla JavaScript as native ES Modules, no build step or bundler
 - `LocalStorage` for persistence
 - Open Graph metadata for rich link previews when the app is shared
@@ -110,7 +110,7 @@ A3-Usabilidade/
 ├── styles.css            # Theming, layout, and animations
 ├── icons.svg             # Inline SVG icon sprite
 └── js/
-    ├── app.js            # Entry point — wires modules, exposes handlers
+    ├── app.js            # Entry point, wires modules, exposes handlers
     └── modules/
         ├── state.js      # Central in-memory application state
         ├── storage.js    # LocalStorage persistence and subject CRUD
