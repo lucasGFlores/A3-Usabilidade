@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────
 //  absences.js — absence registration, undo, and button state
 // ─────────────────────────────────────────
-
+import {getDayName} from './state.js';
 import { state, MAX, getFaltas, setFaltas } from './state.js';
 import { saveFaltasByName, registerTruancy, getTruancy, truancyData } from './storage.js';
 import { updateActiveSlide, refreshSlides } from './slides.js';
@@ -25,6 +25,10 @@ export function updateFaltaBtn() {
   if (!btn) return;
 
   const s = state.subjects[state.idx];
+  if (s.day !== getDayName()){
+  desativarFaltaBtn(btn)
+    return;
+  }
   const alreadyAbsent = getTruancy(s).includes(todayDateString());
 
   if (alreadyAbsent) {
@@ -42,6 +46,13 @@ export function updateFaltaBtn() {
     `;
     btn.setAttribute('onclick', 'registrarFalta()');
   }
+}
+function desativarFaltaBtn(button){
+button.classList.add('undone');
+    button.innerText = `
+      <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#icon-alert-circle"/></svg>
+      Não é o dia dessa aula
+    `;
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
