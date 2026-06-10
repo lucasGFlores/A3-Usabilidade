@@ -15,7 +15,20 @@ export const DAY_ORDER = {
   'sábado': 5,
   'domingo': 6,
 };
+export const getDayName = () => {
+  const days = [
+    'domingo',
+    'segunda-feira',
+    'terça-feira',
+    'quarta-feira',
+    'quinta-feira',
+    'sexta-feira',
+    'sábado',
+  ];
 
+  const today = new Date();
+  return days[today.getDay()];
+}
 /**
  * Mutable app state. Modules import this object and mutate its properties
  * directly — keeps a single source of truth without a heavy state manager.
