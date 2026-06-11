@@ -49,10 +49,13 @@ export function updateFaltaBtn() {
 }
 function desativarFaltaBtn(button){
 button.classList.add('undone');
-    button.innerText = `
+    button.innerHTML = `
       <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#icon-alert-circle"/></svg>
       Não é o dia dessa aula
     `;
+button.onclick = () => {
+    showToast("Não tem como faltar uma aula de outro dia");
+};
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
